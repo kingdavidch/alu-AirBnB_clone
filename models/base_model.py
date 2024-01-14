@@ -37,11 +37,13 @@ class BaseModel:
         '''
         String representation of BaseModel class
         '''
-        return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
+        return "[{}] ({}) {}".\
+            format(self.__class__.__name__, self.id, self.__dict__)
 
     def save(self):
         '''
-        Updates the public instance attribute updated_at with the current datetime
+        Updates the public instance attribute
+        updated_at with the current datetime
         '''
 
         self.updated_at = datetime.now()
@@ -49,7 +51,8 @@ class BaseModel:
 
     def to_dict(self):
         '''
-        Returns a dictionary containing all keys/values of __dict__ of the instance
+        Returns a dictionary containing all
+        keys/values of __dict__ of the instance
         '''
         new_dict = self.__dict__.copy()
         new_dict["__class__"] = self.__class__.__name__

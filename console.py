@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 '''
 Author: Shobi Ola-Adisa
 File:  console.py
@@ -6,7 +7,14 @@ Description: console for AirBnB clone
 '''
 import cmd
 from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.place import Place
+from models.amenity import Amenity
+from models.review import Review
 from models import storage
+
 
 class HBNBCommand(cmd.Cmd):
     '''HBNBCommand class
@@ -18,9 +26,10 @@ class HBNBCommand(cmd.Cmd):
 
     prompt = '(hbnb) '
 
-    class_names = ('BaseModel')
+    class_names = ('BaseModel', 'User', 'State', 'City',
+                   'Place', 'Amenity', 'Review')
 
-    def do_help(self, arg: str) -> bool | None:
+    def do_help(self, arg: str) -> bool:
         '''Method to handle help command
         '''
         return super().do_help(arg)
@@ -39,18 +48,18 @@ class HBNBCommand(cmd.Cmd):
         '''Method to handle quit command
         '''
         return True
-    
+
     def do_EOF(self, arg: str) -> bool:
         '''Method to handle EOF
         '''
         return True
-    
+
     # def precmd(self, line):
     #     '''Called on input lines before they are processed by onecmd
     #     '''
     #     line = line.strip()
     #     return(line)
-    
+
     def do_show(self, line):
         '''Prints the string representation of an instance with the exact id
 
@@ -145,7 +154,8 @@ Usage: (hbnb) update <class name> <id> <attribute name> "<attribute value>"
                         if len(args) >= 3:
                             attribute_name = args[2]
                             if len(args) >= 4:
-                                value = args[3].replace('"', '').replace("'", "")                                
+                                value = args[3].replace('"', '')\
+                                    .replace("'", "")
                                 setattr(obj, attribute_name, value)
                                 storage.new(obj)
                                 obj.save()
@@ -161,9 +171,10 @@ Usage: (hbnb) update <class name> <id> <attribute name> "<attribute value>"
                 print("** class doesn't exist **")
         else:
             print("** class name missing **")
-    
+
     def do_create(self, line: str) -> None:
-        '''Creates a new instance of Object, saves it (to the JSON file) and prints the id
+        '''Creates a new instance of Object,
+        saves it (to the JSON file) and prints the id
 
         Example: (hbnb) create BaseModel
         '''

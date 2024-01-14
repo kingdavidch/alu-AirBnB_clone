@@ -16,7 +16,8 @@ class FileStorage:
 
     Attributes:
         __file_path: string - path to the JSON file
-        __objects: dictionary - empty but will store all objects by <class name>.id
+        __objects: dictionary - empty but will
+        store all objects by <class name>.id
     '''
     __file_path = FILE_PATH
     __objects = {}
@@ -59,12 +60,19 @@ class FileStorage:
         Deserializes the JSON file to __objects
         '''
         from models.base_model import BaseModel
+        from models.user import User
+        from models.state import State
+        from models.city import City
+        from models.place import Place
+        from models.amenity import Amenity
+        from models.review import Review
+
         try:
             with open(FileStorage.__file_path, "r", encoding='utf-8') as f:
                 data = json.load(f)
                 for key, value in data.items():
                     FileStorage.__objects[key] = eval(
-                        value["__class__"])(**value)                
+                        value["__class__"])(**value)
         except NameError:
             pass
         except IOError:

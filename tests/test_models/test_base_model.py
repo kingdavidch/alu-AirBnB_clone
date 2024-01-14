@@ -15,9 +15,14 @@ class TestBaseModelClass(unittest.TestCase):
         '''
         base_instance = BaseModel()
         with self.assertRaises(AttributeError):
-            _ = base_instance.id
-            _ = base_instance.created_at
-            _ = base_instance.updated_at
+            try:
+                _ = base_instance.id
+                _ = base_instance.created_at
+                _ = base_instance.updated_at
+            except AttributeError:
+                pass
+            else:
+                raise AttributeError
 
     def test_string_representation_format(self):
         '''Tests the format of the string

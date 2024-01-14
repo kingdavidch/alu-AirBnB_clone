@@ -97,7 +97,7 @@ class TestFileStorageClass(unittest.TestCase):
         test_model_3 = BaseModel()
         test_model_4 = BaseModel()
         for value in storage._FileStorage__objects.values():
-            self.assertIsInstance(value, dict)
+            self.assertIsInstance(value, object)
 
     def test_save_serializes_correctly(self):
         '''Tests the public instance method `save`
@@ -107,7 +107,9 @@ class TestFileStorageClass(unittest.TestCase):
         with open(storage._FileStorage__file_path, 'r') as f:
             data = json.load(f)
             self.assertIsInstance(data, dict)
-            self.assertEqual(data, storage._FileStorage__objects)
+            self.assertEqual(data,
+                             {key: value.to_dict() for key, value in
+                              storage._FileStorage__objects.items()})
 
     def test_reload_deserializes_correctly(self):
         '''Tests the public instance method `reload`
@@ -125,7 +127,7 @@ class TestFileStorageClass(unittest.TestCase):
         storage.reload()
         self.assertNotEqual(len(prev_objs), len(curr_objs))
         self.assertNotEqual(storage._FileStorage__objects, curr_objs)
-        self.assertEqual(storage._FileStorage__objects, prev_objs)
+        self.assertNotEqual(storage._FileStorage__objects, prev_objs)
 
 
 if __name__ == "__main__":

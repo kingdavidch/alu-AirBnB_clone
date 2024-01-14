@@ -37,6 +37,13 @@ class FileStorage:
         key = obj.__class__.__name__ + "." + obj.id
         FileStorage.__objects[key] = obj
 
+    def delete(self, key):
+        ''' Deletes an object from __objects if it is inside
+        '''
+        if key in FileStorage.__objects.keys():
+            del FileStorage.__objects[key]
+            self.save()
+
     def save(self):
         '''
         Serializes __objects to the JSON file (path: __file_path)

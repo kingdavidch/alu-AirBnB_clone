@@ -14,6 +14,7 @@ from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
 from models import storage
+import re
 
 
 class HBNBCommand(cmd.Cmd):
@@ -28,6 +29,50 @@ class HBNBCommand(cmd.Cmd):
 
     class_names = ('BaseModel', 'User', 'State', 'City',
                    'Place', 'Amenity', 'Review')
+
+    @staticmethod
+    def remove_quotes(input):
+        '''Removes quotes from input
+        '''
+        result = re.search(r'''(?<=["|'])(.)*(?=["|'])''', input)
+        if result:
+            return (result.group(0))
+        return (input)
+
+    def precmd(self, line):
+        '''Processes custom formated
+         commands and returns a valid command format
+        '''
+        line = line.strip()
+        is_formatted = re.match(r"""^[\s]*[A-Z][a-z]+[.]"""
+                                + """[a-z]+\(["]?[-a-z0-9]*"""
+                                + """["]?[,]?[-\s\w}0-9{""'',:]*\)""", line)
+        if is_formatted is not None:
+            method = re.search(r'''(?<=[.])[a-z]*[a-z](?=\()''', line)
+            if method is not None:
+                command = method.group(0)
+            else:
+                print("**Error: no method found**")
+                return
+            class_name = re.search(r'''^[A-Z][a-z]+[a-z](?=[.])''', line)
+            if class_name is not None:
+                command += " " + class_name.group(0)
+                args = re.search(r'''(?<=\()(.)*(?=\))''', line)
+            else:
+                print("** class doesn't exist **")
+                return
+            if args is not None:
+                """ removes the dictionary argument so it is not
+                confused for a normal argument """
+                args = re.sub(r'''{[-\w"'_:,\s]*}''', "", args.group(0))
+                args = args.split(", ")
+                unquoted_args = list(map(HBNBCommand.remove_quotes, args))
+                command += " " + " ".join(unquoted_args)
+                dict_arg = re.search(r'''{[\w"'_:,\-\s]*}''', line)
+                if dict_arg is not None:
+                    command += " " + dict_arg.group(0)
+            return (command)
+        return (line)
 
     def do_help(self, arg: str) -> bool:
         '''Method to handle help command
@@ -110,6 +155,18 @@ Example: (hbnb) destroy BaseModel 1234-1234-1234
                 print("** class doesn't exist **")
         else:
             print("** class name missing **")
+
+    def do_count(self, line):
+        ''' Takes a class name and prints number of existing instances
+        '''
+        class_name = line.strip()
+        if class_name in HBNBCommand.class_names:
+            obj_dict = storage.all()
+            obj_list = [str(item) for item in obj_dict.values()
+                        if item.__class__.__name__ == class_name]
+            print(len(obj_list))
+        else:
+            print("** class doesn't exist **")
 
     def do_all(self, line):
         '''Prints the string form of all instances of the specified class name

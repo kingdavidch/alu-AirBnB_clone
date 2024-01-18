@@ -44,8 +44,8 @@ class HBNBCommand(cmd.Cmd):
          commands and returns a valid command format
         '''
         line = line.strip()
-        is_formatted = re.match(r"""^[\s]*[A-Z][a-z]+[.]"""
-                                + """[a-z]+\(["]?[-a-z0-9]*"""
+        is_formatted = re.match(r"""^[\s]*[A-Z][a-zA-Z]+[.]"""
+                                + """[a-z]+\(["]?[-a-z0-9\s]*"""
                                 + """["]?[,]?[-\s\w}0-9{""'',:]*\)""", line)
         if is_formatted is not None:
             method = re.search(r'''(?<=[.])[a-z]*[a-z](?=\()''', line)
@@ -53,14 +53,14 @@ class HBNBCommand(cmd.Cmd):
                 command = method.group(0)
             else:
                 print("**Error: no method found**")
-                return
-            class_name = re.search(r'''^[A-Z][a-z]+[a-z](?=[.])''', line)
+                return ("")
+            class_name = re.search(r'''^[A-Z][a-zA-Z]+[a-z](?=[.])''', line)
             if class_name is not None:
                 command += " " + class_name.group(0)
                 args = re.search(r'''(?<=\()(.)*(?=\))''', line)
             else:
                 print("** class doesn't exist **")
-                return
+                return ("")
             if args is not None:
                 """ removes the dictionary argument so it is not
                 confused for a normal argument """
@@ -189,7 +189,6 @@ Example: (hbnb) all BaseModel
         '''Updates an instance based on a class name and id.
 Usage: (hbnb) update <class name> <id> <attribute name> "<attribute value>"
         '''
-        print(line)
         if ('{' in line and '}' in line):
             a_index = line.find('{')
             z_index = line.find('}')
